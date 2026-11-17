@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2f6b3a">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/png" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta charset="utf-8">
 <title>FutureU Cafe – Order Online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,14 +19,14 @@ button:disabled{opacity:.5;cursor:default}
 input,textarea{font:inherit;color:inherit}
 [hidden]{display:none!important}
 .shell{max-width:640px;margin:0 auto}
-.hero{background:var(--g);color:#fff;padding:22px 18px 26px;border-radius:0 0 26px 26px;position:relative;overflow:hidden}
-.hero:after{content:"☕";position:absolute;right:-6px;bottom:-22px;font-size:110px;opacity:.12;transform:rotate(-12deg)}
-.hero .script{font-family:"Dancing Script",cursive;font-size:20px;opacity:.9}
-.hero h1{margin:0;font-size:26px;line-height:1.1}
-.hero p{margin:6px 0 0;opacity:.85;font-size:13px}
-.spill{display:inline-flex;align-items:center;gap:7px;margin-top:12px;background:rgba(255,255,255,.16);padding:6px 12px;border-radius:30px;font-size:12.5px;font-weight:600}
-.spill i{width:9px;height:9px;border-radius:50%;background:#4ade80;display:block}
-.spill.closed i{background:#f87171}.spill.soon i{background:#fbbf24}
+.hero{background:#fff;color:var(--ink);padding:22px 18px 20px;border-radius:0 0 26px 26px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.hero .logo{width:min(230px,62vw);height:auto;display:block;margin:0 auto}
+.hero h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hero p{margin:10px 0 0;color:var(--mut);font-size:13px}
+.spill{display:inline-flex;align-items:center;gap:7px;margin-top:12px;background:var(--gl);color:var(--g2);padding:6px 12px;border-radius:30px;font-size:12.5px;font-weight:600}
+.spill i{width:9px;height:9px;border-radius:50%;background:#22c55e;display:block}
+.spill.closed{background:var(--redl);color:#8a2318}.spill.closed i{background:#ef4444}
+.spill.soon{background:var(--ambl);color:#7a4a00}.spill.soon i{background:#f59e0b}
 .notice{margin:12px 14px 0;padding:12px 14px;border-radius:14px;font-size:13px;line-height:1.4}
 .notice.closed{background:var(--redl);color:#8a2318}
 .notice.soon{background:var(--ambl);color:#7a4a00}
@@ -135,7 +137,7 @@ input,textarea{font:inherit;color:inherit}
   <!-- MENU VIEW -->
   <div id="menuView">
     <header class="hero">
-      <div class="script">Welcome to</div>
+      <img class="logo" src="logo.png" alt="FutureU Cafe">
       <h1 id="cafeName">FutureU Cafe</h1>
       <p>Scan · Order · Collect — skip the queue!</p>
       <div class="spill" id="spill"><i></i><span>Checking…</span></div>
