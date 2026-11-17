@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6b3a">
+<meta charset="utf-8">
+<title>FutureU Cafe – POS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g:#2f6b3a;--g2:#23532c;--gl:#e8f2e9;--bg:#f3f1eb;--card:#fff;--ink:#1d221e;--mut:#6b726b;--line:#e4e0d6;
+--amb:#b86e00;--ambl:#fff3d9;--blu:#1f5fbf;--blul:#e7efff;--red:#c0392b;--redl:#fdecea;--r:14px}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;color:inherit;background:none}
+button:disabled{opacity:.55;cursor:default}
+input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.b{padding:9px 14px;font-weight:600;font-size:13px;border-radius:10px;transition:.15s}
+.b.pri{background:var(--g);color:#fff}.b.pri:hover{background:var(--g2)}
+.b.ghost{background:#efede6;color:var(--ink)}
+.b.warn{background:var(--ambl);color:var(--amb)}
+.b.danger{background:var(--red);color:#fff}
+.b.big{width:100%;padding:14px;font-size:15px}
+.b.sm{padding:9px 11px}
+.inp{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;outline:none}
+.inp:focus{border-color:var(--g)}
+.hint{color:var(--mut);font-size:12.5px}
+
+/* ---------- login ---------- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#3d8049,#1c4022);padding:16px}
+.lbox{background:#fff;border-radius:24px;padding:30px 26px;width:330px;max-width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.lbox .logo{font-size:30px;margin-bottom:2px}
+.lbox h1{margin:0;font-size:21px;color:var(--g)}
+.lbox p{margin:2px 0 20px;color:var(--mut);font-size:13px}
+.dots{display:flex;gap:12px;justify-content:center;margin-bottom:20px;height:16px}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--g);display:block;transition:.15s}
+.dots i.on{background:var(--g);transform:scale(1.1)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pad button{height:58px;font-size:22px;font-weight:600;background:var(--bg);border-radius:14px}
+.pad button:active{background:var(--gl)}
+.pad .go{background:var(--g);color:#fff;font-size:15px}
+.lerr{color:var(--red);min-height:20px;margin-top:14px;font-size:13px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:30}
+header{background:var(--g);color:#fff;display:flex;align-items:center;gap:12px;padding:9px 16px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:17px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand small{font-weight:500;opacity:.8;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:20px}
+.store{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);padding:6px 8px 6px 14px;border-radius:30px;margin-left:auto}
+.sdot{width:10px;height:10px;border-radius:50%;background:#bbb;flex:none}
+.store.open .sdot{background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.25)}
+.store.soon .sdot{background:#fbbf24;box-shadow:0 0 0 4px rgba(251,191,36,.25)}
+.store.closed .sdot{background:#f87171;box-shadow:0 0 0 4px rgba(248,113,113,.25)}
+.stxt{font-size:11.5px;line-height:1.25;max-width:260px}
+.stxt b{display:block;font-size:13px}
+.switch{position:relative;width:48px;height:28px;flex:none;display:inline-block}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch span{position:absolute;inset:0;background:#c9c9c9;border-radius:30px;transition:.2s;cursor:pointer}
+.switch span:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch input:checked+span{background:#22c55e}
+.switch input:checked+span:before{transform:translateX(20px)}
+.hright{display:flex;align-items:center;gap:10px}
+.clock{font-weight:600;font-variant-numeric:tabular-nums;font-size:15px}
+.hbtn{background:rgba(255,255,255,.16);color:#fff;padding:7px 12px;font-size:12.5px;border-radius:20px}
+.conn{width:8px;height:8px;border-radius:50%;background:#4ade80}
+.conn.off{background:#f87171;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+#soundBtn{background:#fbbf24;color:#3b2a00}
+nav{display:flex;gap:4px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{padding:9px 16px;font-weight:600;color:var(--mut);border-radius:10px;white-space:nowrap;position:relative}
+nav button.on{background:var(--gl);color:var(--g)}
+.badge{display:inline-block;min-width:20px;padding:1px 6px;border-radius:20px;background:var(--red);color:#fff;font-size:11px;margin-left:6px;text-align:center}
+
+/* ---------- orders board ---------- */
+.kanban{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:14px}
+.col{background:#e9e6dd;border-radius:16px;padding:10px;min-height:200px}
+.colh{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px;font-weight:700}
+.colh .cnt{background:#fff;border-radius:20px;padding:1px 10px;font-size:13px}
+#col-Pending .colh{color:var(--amb)}#col-Preparing .colh{color:var(--blu)}#col-Ready .colh{color:var(--g)}
+.list{display:flex;flex-direction:column;gap:10px}
+.empty{text-align:center;color:var(--mut);padding:30px 0;font-size:13px}
+.oc{background:#fff;border-radius:14px;padding:12px 13px;box-shadow:0 1px 2px rgba(0,0,0,.06);border-left:5px solid #ccc;animation:pop .25s}
+@keyframes pop{from{transform:scale(.97);opacity:.4}}
+.oc.st-Pending{border-left-color:#f0a020}.oc.st-Preparing{border-left-color:var(--blu)}.oc.st-Ready{border-left-color:var(--g)}
+.oc.late{box-shadow:0 0 0 2px #f6b2a8}
+.oh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ono{font-size:22px;font-weight:700;letter-spacing:.5px;margin-right:2px}
+.tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#eee;text-transform:uppercase;letter-spacing:.3px}
+.tag.qr{background:#ede7ff;color:#5b3fc4}.tag.ctr{background:#e6f4f1;color:#0f766e}
+.tag.ta{background:var(--ambl);color:var(--amb)}.tag.di{background:#eef0f3;color:#444}
+.ago{margin-left:auto;font-size:12px;color:var(--mut);font-weight:500}
+.oc.late .ago{color:var(--red);font-weight:700}
+.oname{font-weight:600;margin:4px 0 6px;font-size:14px}
+.oname small{color:var(--mut);font-weight:400}
+.oi{list-style:none;margin:0;padding:8px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+.oi li{padding:3px 0;font-size:14px;line-height:1.35}
+.oi li b{display:inline-block;min-width:26px;color:var(--g)}
+.oi small{display:block;color:var(--mut);font-size:12px;margin-left:26px}
+.oi em{display:block;color:#a14d00;font-size:12px;margin-left:26px;font-style:normal}
+.onote{background:var(--ambl);color:#7a4a00;padding:6px 9px;border-radius:8px;font-size:12.5px;margin-top:8px}
+.of{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.of .tot{font-weight:700;font-size:15px}
+.pay{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px}
+.pay.paid{background:var(--gl);color:var(--g)}.pay.unpaid{background:var(--redl);color:var(--red)}
+.oa{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.oa .pri{flex:1}
+.done{margin:0 14px 24px;background:#fff;border-radius:16px;padding:6px 14px}
+.done summary{cursor:pointer;font-weight:700;padding:10px 0}
+.drow{display:grid;grid-template-columns:70px 1fr 90px 110px 90px auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.drow .st{font-weight:600}
+.drow .st.Completed{color:var(--g)}.drow .st.Cancelled{color:var(--red)}
+.lnk{color:var(--blu);font-weight:600;font-size:12.5px;padding:4px 6px}
+
+/* ---------- counter ---------- */
+.counter{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:14px;padding:14px;align-items:start}
+.cmenu{min-width:0}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.chip{padding:7px 14px;border-radius:20px;background:#fff;border:1.5px solid var(--line);font-weight:600;font-size:12.5px;white-space:nowrap}
+.chip.on{background:var(--g);border-color:var(--g);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tile{background:#fff;border-radius:14px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:104px;box-shadow:0 1px 2px rgba(0,0,0,.05);position:relative;border:2px solid transparent}
+.tile:hover{border-color:var(--gl)}
+.tile:active{transform:scale(.98)}
+.tile .em{font-size:20px}
+.tile .tn{font-weight:600;font-size:13.5px;line-height:1.25}
+.tile .tp{color:var(--g);font-weight:600;font-size:12px;margin-top:auto}
+.tile.off{opacity:.5}
+.tile .so{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:6px}
+.ccart{background:#fff;border-radius:16px;padding:14px;position:sticky;top:120px;max-height:calc(100vh - 135px);overflow:auto}
+.ccart h3{margin:0 0 8px;font-size:16px}
+.cl{display:flex;gap:8px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+.cl .nm{flex:1;font-size:13.5px;font-weight:600;line-height:1.3}
+.cl .nm small{display:block;color:var(--mut);font-weight:400;font-size:12px}
+.cl .pr{font-weight:600;font-size:13px;white-space:nowrap}
+.qty{display:flex;align-items:center;gap:4px}
+.qty button{width:28px;height:28px;border-radius:8px;background:var(--bg);font-weight:700;font-size:15px}
+.qty span{min-width:20px;text-align:center;font-weight:600}
+.cform{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.seg{display:flex;background:var(--bg);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;padding:8px 6px;border-radius:9px;font-weight:600;font-size:13px;color:var(--mut)}
+.seg button.on{background:#fff;color:var(--g);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.sum{font-size:13.5px}
+.sum div{display:flex;justify-content:space-between;padding:2px 0}
+.sum .gt{font-size:18px;font-weight:700;border-top:1px solid var(--line);margin-top:4px;padding-top:7px}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.quick button{padding:6px 10px;background:var(--bg);border-radius:8px;font-weight:600;font-size:12.5px}
+.change{display:flex;justify-content:space-between;align-items:center;background:var(--gl);padding:8px 12px;border-radius:10px;font-weight:600}
+.change b{font-size:17px;color:var(--g)}
+.cempty{color:var(--mut);text-align:center;padding:26px 0;font-size:13px}
+
+/* ---------- menu availability ---------- */
+.wrap{padding:14px;max-width:980px;margin:0 auto}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.tools .inp{max-width:260px}
+.mcat{background:#fff;border-radius:16px;padding:6px 14px;margin-bottom:12px}
+.mcat h4{margin:10px 0 4px;font-size:14px;color:var(--g)}
+.mrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.mrow:first-of-type{border-top:0}
+.mrow .mn{flex:1}
+.mrow .mn b{font-weight:600}
+.mrow .mn small{display:block;color:var(--mut);font-size:12px}
+.mstate{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--gl);color:var(--g)}
+.mrow.off .mstate{background:var(--redl);color:var(--red)}
+.mrow.off .mn b{color:var(--mut);text-decoration:line-through}
+
+/* ---------- reports ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:#fff;border-radius:14px;padding:14px}
+.kpi span{color:var(--mut);font-size:12px;font-weight:500}
+.kpi b{display:block;font-size:22px;margin-top:2px}
+.kpi small{color:var(--mut);font-size:11.5px}
+.cards2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card{background:#fff;border-radius:16px;padding:14px 16px}
+.card h3{margin:0 0 10px;font-size:15px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:7px 4px;border-top:1px solid var(--line);text-align:left}
+.tbl th{color:var(--mut);font-weight:500;font-size:12px;border-top:0}
+.tbl td.r,.tbl th.r{text-align:right}
+.bars{display:flex;align-items:flex-end;gap:6px;height:140px;padding-top:10px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bar i{display:block;width:100%;max-width:34px;background:var(--g);border-radius:6px 6px 2px 2px;min-height:3px}
+.bar span{font-size:10.5px;color:var(--mut)}
+.bar em{font-size:10.5px;font-style:normal;font-weight:600}
+
+/* ---------- settings ---------- */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid label,.fl{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;color:var(--mut)}
+.fgrid .full{grid-column:1/-1}
+.days{display:flex;gap:5px;flex-wrap:wrap}
+.days button{padding:6px 10px;border-radius:8px;background:var(--bg);font-weight:600;font-size:12.5px;color:var(--mut)}
+.days button.on{background:var(--g);color:#fff}
+.qrbox{text-align:center}
+.qrbox img{width:220px;height:220px;border-radius:12px;border:1px solid var(--line);background:#fff}
+.url{font-size:12px;word-break:break-all;background:var(--bg);padding:8px;border-radius:8px;margin:10px 0}
+
+/* ---------- modal / toast ---------- */
+.ov{position:fixed;inset:0;background:rgba(15,20,15,.5);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.mbox{background:#fff;border-radius:20px;max-width:440px;width:100%;max-height:90vh;overflow:auto;padding:20px;animation:pop .2s}
+.mbox h3{margin:0 0 4px;font-size:18px}
+.mbox .md{color:var(--mut);font-size:13px;margin:0 0 12px}
+.mbtns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.mbtns .b{flex:1}
+.og{margin:12px 0}
+.og h5{margin:0 0 6px;font-size:13px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);font-weight:500;font-size:13px;background:#fff}
+.opt.on{border-color:var(--g);background:var(--gl);color:var(--g);font-weight:600}
+.big-no{font-size:44px;font-weight:700;color:var(--g);text-align:center;margin:6px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#1d221e;color:#fff;padding:12px 18px;border-radius:12px;font-weight:500;z-index:80;transition:.25s;max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.ok{background:var(--g)}#toast.err{background:var(--red)}
+
+@media (max-width:980px){
+  .kanban{grid-template-columns:1fr}
+  .counter{grid-template-columns:1fr}
+  .ccart{position:static;max-height:none}
+  .drow{grid-template-columns:60px 1fr 80px auto}
+  .drow .hide-sm{display:none}
+  .stxt{max-width:150px}
+}
+@media (max-width:600px){
+  .fgrid{grid-template-columns:1fr}
+  .store{margin-left:0;width:100%}
+  .clock{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <div class="lbox">
+    <div class="logo">☕</div>
+    <h1 id="lName">FutureU Cafe</h1>
+    <p>POS System · Enter your PIN</p>
+    <div class="dots" id="dots"></div>
+    <div class="pad" id="pad">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+      <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+      <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+      <button data-k="del">⌫</button><button data-k="0">0</button><button data-k="go" class="go">Login</button>
+    </div>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" hidden>
+  <div class="top">
+    <header>
+      <div class="brand">☕ <span id="hName">FutureU Cafe</span> <small id="role">Staff</small></div>
+      <div class="store closed" id="store">
+        <span class="sdot"></span>
+        <div class="stxt"><b id="stitle">Loading…</b><span id="ssub"></span></div>
+        <label class="switch" title="Online ordering ON/OFF"><input type="checkbox" id="storeToggle"><span></span></label>
+      </div>
+      <div class="hright">
+        <button class="hbtn" id="soundBtn" hidden>🔔 Enable sound</button>
+        <span class="conn" id="conn" title="Connection"></span>
+        <span class="clock" id="clock"></span>
+        <button class="hbtn" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+    <nav id="tabs">
+      <button data-tab="orders" class="on">📋 Orders<span class="badge" id="bPending" hidden>0</span></button>
+      <button data-tab="counter">🧾 New Order</button>
+      <button data-tab="menu">🍽️ Menu ON/OFF<span class="badge" id="bOff" hidden>0</span></button>
+      <button data-tab="reports">📊 Sales Report</button>
+      <button data-tab="settings" class="admin-only">⚙️ Settings</button>
+    </nav>
+  </div>
+
+  <!-- Orders -->
+  <section id="tab-orders" class="tab">
+    <div class="kanban">
+      <div class="col" id="col-Pending"><div class="colh">🆕 New Orders <span class="cnt">0</span></div><div class="list"></div></div>
+      <div class="col" id="col-Preparing"><div class="colh">👨‍🍳 Preparing <span class="cnt">0</span></div><div class="list"></div></div>
+      <div class="col" id="col-Ready"><div class="colh">✅ Ready for Pickup <span class="cnt">0</span></div><div class="list"></div></div>
+    </div>
+    <details class="done" id="doneBox"><summary>Completed &amp; cancelled today (<span id="doneCnt">0</span>)</summary><div id="doneList"></div></details>
+  </section>
+
+  <!-- Counter -->
+  <section id="tab-counter" class="tab" hidden>
+    <div class="counter">
+      <div class="cmenu">
+        <input class="inp" id="cSearch" placeholder="🔍 Search menu…">
+        <div class="chips" id="cCats"></div>
+        <div class="grid" id="cGrid"></div>
+      </div>
+      <aside class="ccart">
+        <h3>Current Order</h3>
+        <div id="cLines"></div>
+        <div class="cform">
+          <div class="seg" id="cType"><button data-v="Dine-in" class="on">🍽️ Dine-in</button><button data-v="Takeaway">🛍️ Takeaway</button></div>
+          <input class="inp" id="cName" placeholder="Customer name (optional)" maxlength="40">
+          <input class="inp" id="cNotes" placeholder="Order notes (optional)" maxlength="200">
+          <div class="sum" id="cSum"></div>
+          <div class="seg" id="cPay"><button data-v="Cash" class="on">💵 Cash</button><button data-v="QR">📱 QR</button><button data-v="">⏳ Pay later</button></div>
+          <div id="cashBox" class="cform" style="margin-top:0">
+            <input class="inp" id="cCash" type="number" inputmode="decimal" step="0.1" min="0" placeholder="Cash received (RM)">
+            <div class="quick" id="cQuick"></div>
+            <div class="change">Change <b id="cChange">RM 0.00</b></div>
+          </div>
+          <button class="b pri big" id="cSubmit">Place Order</button>
+          <button class="b ghost" id="cClear">Clear</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Menu availability -->
+  <section id="tab-menu" class="tab" hidden>
+    <div class="wrap">
+      <div class="tools">
+        <input class="inp" id="mSearch" placeholder="🔍 Search item…">
+        <div class="seg" id="mFilter" style="min-width:280px"><button data-v="all" class="on">All</button><button data-v="on">ON</button><button data-v="off">OFF / Sold out</button></div>
+      </div>
+      <div id="mList"></div>
+      <p class="hint">Switch an item <b>OFF</b> when it is sold out — customers can't order it until you switch it back <b>ON</b>.<br>
+        To change prices or add new items, edit the <b>Menu</b> sheet, then click <b>☕ Cafe System → Refresh cache</b>.</p>
+    </div>
+  </section>
+
+  <!-- Reports -->
+  <section id="tab-reports" class="tab" hidden>
+    <div class="wrap">
+      <div class="tools"><input class="inp" type="date" id="rDate" style="max-width:200px"><button class="b pri" id="rGo">Load report</button></div>
+      <div id="rBody"><div class="empty">Loading…</div></div>
+    </div>
+  </section>
+
+  <!-- Settings (admin) -->
+  <section id="tab-settings" class="tab" hidden>
+    <div class="wrap">
+      <div class="cards2">
+        <div class="card qrbox">
+          <h3>📱 Customer QR Ordering</h3>
+          <img id="qrImg" alt="QR code">
+          <div class="url" id="qrUrl"></div>
+          <div class="mbtns" style="margin-top:0">
+            <button class="b ghost" id="copyUrl">Copy link</button>
+            <a class="b pri" id="openUrl" target="_blank" style="text-decoration:none;text-align:center">Open page</a>
+          </div>
+          <p class="hint">Print this QR code and place it on tables and at the counter. Right-click / long-press the QR image to save it.</p>
+        </div>
+        <div class="card">
+          <h3>🕘 Store Hours &amp; Rules</h3>
+          <div class="fgrid">
+            <label class="full">Cafe name<input class="inp" id="sCafeName" maxlength="40"></label>
+            <label>Opening time<input class="inp" type="time" id="sOpenTime"></label>
+            <label>Closing time<input class="inp" type="time" id="sCloseTime"></label>
+            <label>Stop online orders (min before closing)<input class="inp" type="number" id="sLastOrderMinutes" min="0" max="180"></label>
+            <label>Takeaway packaging fee (RM)<input class="inp" type="number" step="0.1" id="sPackagingFee" min="0"></label>
+            <div class="fl full">Business days<div class="days" id="sDays"></div></div>
+            <label class="full">Payment note (shown at checkout)<textarea class="inp" id="sPaymentNote" rows="2" maxlength="300"></textarea></label>
+            <label class="full">Announcement banner (optional)<textarea class="inp" id="sAnnouncement" rows="2" maxlength="200" placeholder="e.g. Raya promo: free egg tart for orders above RM20!"></textarea></label>
+            <label>Staff PIN<input class="inp" id="sStaffPIN" inputmode="numeric" maxlength="6"></label>
+            <label>Admin PIN<input class="inp" id="sAdminPIN" inputmode="numeric" maxlength="6"></label>
+          </div>
+          <button class="b pri big" id="sSave" style="margin-top:14px">Save settings</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+const BOOT = { cafeName: (window.CAFE_NAME || 'FutureU Cafe') };
+const S = {
+  token: null, role: null, orderUrl: '', version: '', active: [], done: [], store: null,
+  menu: null, cart: [], cCat: 'All', cSearch: '', mSearch: '', mFilter: 'all',
+  seen: new Set(), first: true, tab: 'orders', pin: '', pollT: null,
+  orderType: 'Dine-in', payMethod: 'Cash', days: []
+};
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+/* ================= helpers ================= */
+const $ = (q, el) => (el || document).querySelector(q);
+const $$ = (q, el) => Array.from((el || document).querySelectorAll(q));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rm = n => 'RM ' + (Number(n) || 0).toFixed(2);
+const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
+function ss(k, v) {
+  try {
+    if (v === undefined) return JSON.parse(sessionStorage.getItem(k));
+    if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, JSON.stringify(v));
+  } catch (e) { return null; }
+}
+async function api(fn, ...args) {
+  let res, j;
+  try { res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ fn, args }) }); }
+  catch (e) { throw new Error('Network error. Please check your internet connection.'); }
+  try { j = await res.json(); } catch (e) { throw new Error('Server error (' + res.status + '). Check API_URL in config.js.'); }
+  if (!j.ok) {
+    if (String(j.error).indexOf('SESSION_EXPIRED') >= 0) logout(true);
+    throw new Error(j.error);
+  }
+  return j.data;
+}
+const errMsg = e => String((e && e.message) || e || 'Error').replace(/^Error:\s*/, '');
+function toast(msg, type) {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show ' + (type || '');
+  clearTimeout(t._t); t._t = setTimeout(() => t.className = '', 3500);
+}
+function ago(iso) {
+  const m = Math.floor((Date.now() - new Date(iso)) / 60000);
+  if (m < 1) return 'just now'; if (m < 60) return m + ' min';
+  return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+}
+const t12 = iso => iso ? new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '';
+function emoji(cat) {
+  const c = String(cat).toLowerCase();
+  if (c.includes('break')) return '🍳'; if (c.includes('lunch')) return '🍝'; if (c.includes('all day')) return '🍛';
+  if (c.includes('pastry')) return '🥐'; if (c.includes('non')) return '🧋'; if (c.includes('coffee')) return '☕';
+  if (c.includes('drink')) return '🥤'; return '🍽️';
+}
+function optsText(l) {
+  const o = [];
+  if (l.variant) o.push(l.variant);
+  Object.keys(l.choices || {}).forEach(k => o.push(l.choices[k]));
+  let t = o.join(', ');
+  if (l.addons && l.addons.length) t += (t ? ' · ' : '') + '+ ' + l.addons.join(', ');
+  return t;
+}
+function priceLabel(it) {
+  if (it.variants.length > 1) return it.variants.map(v => v.name + ' ' + v.price.toFixed(2)).join(' / ');
+  if (it.variants.length === 1) return rm(it.variants[0].price);
+  return rm(it.price);
+}
+
+/* ================= sound ================= */
+let actx = null;
+function unlockAudio() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+  } catch (e) {}
+  setTimeout(() => { $('#soundBtn').hidden = !!(actx && actx.state === 'running') || !S.token; }, 200);
+}
+function chime(n) {
+  if (!actx || actx.state !== 'running') return;
+  let t = actx.currentTime + 0.05;
+  for (let i = 0; i < (n || 1); i++) {
+    [988, 1319, 1568].forEach(f => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.4, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + 0.32); t += 0.14;
+    });
+    t += 0.4;
+  }
+}
+document.addEventListener('pointerdown', unlockAudio);
+
+/* ================= modals ================= */
+function modal(html, mount) {
+  const ov = document.createElement('div');
+  ov.className = 'ov';
+  ov.innerHTML = '<div class="mbox">' + html + '</div>';
+  const close = () => ov.remove();
+  ov.addEventListener('click', e => { if (e.target === ov) { close(); if (ov._onCancel) ov._onCancel(); } });
+  document.body.appendChild(ov);
+  if (mount) mount(ov.firstChild, close, ov);
+  return close;
+}
+function choiceBox(title, msg, options) {
+  return new Promise(res => {
+    modal('<h3>' + esc(title) + '</h3><p class="md">' + esc(msg) + '</p><div class="mbtns" style="flex-direction:column">' +
+      options.map((o, i) => '<button class="b ' + (o[2] || (i === 0 ? 'pri' : 'ghost')) + ' big" data-v="' + esc(o[0]) + '">' + esc(o[1]) + '</button>').join('') +
+      '<button class="b ghost big" data-v="__x">Back</button></div>',
+      (box, close, ov) => {
+        ov._onCancel = () => res(null);
+        box.addEventListener('click', e => {
+          const b = e.target.closest('button[data-v]'); if (!b) return;
+          close(); res(b.dataset.v === '__x' ? null : b.dataset.v);
+        });
+      });
+  });
+}
+function promptBox(title, placeholder, okLabel, okCls) {
+  return new Promise(res => {
+    modal('<h3>' + esc(title) + '</h3><input class="inp" id="pIn" maxlength="100" placeholder="' + esc(placeholder) + '" style="margin-top:10px">' +
+      '<div class="mbtns"><button class="b ghost" data-v="0">Back</button><button class="b ' + (okCls || 'pri') + '" data-v="1">' + esc(okLabel) + '</button></div>',
+      (box, close, ov) => {
+        ov._onCancel = () => res(null);
+        $('#pIn', box).focus();
+        box.addEventListener('click', e => {
+          const b = e.target.closest('button[data-v]'); if (!b) return;
+          const v = $('#pIn', box).value.trim(); close(); res(b.dataset.v === '1' ? v : null);
+        });
+      });
+  });
+}
+
+/* Item options popup (Hot/Iced, flavour, add-ons, qty) */
+function itemModal(it, onAdd) {
+  const st = { variant: it.variants.length ? it.variants[it.variants.length > 1 ? 1 : 0].name : '', choices: {}, addons: [], qty: 1, note: '' };
+  it.choices.forEach(g => st.choices[g.group] = g.options[0]);
+  const unit = () => {
+    let u = it.variants.length ? (it.variants.find(v => v.name === st.variant) || it.variants[0]).price : it.price;
+    st.addons.forEach(n => { const a = it.addons.find(x => x.name === n); if (a) u += a.price; });
+    return r2(u);
+  };
+  let h = '<h3>' + esc(it.name) + '</h3>' + (it.desc ? '<p class="md">' + esc(it.desc) + '</p>' : '');
+  if (it.variants.length) h += '<div class="og"><h5>Choose</h5><div class="opts" data-g="__v">' +
+    it.variants.map(v => '<button class="opt" data-o="' + esc(v.name) + '">' + esc(v.name) + ' · ' + v.price.toFixed(2) + '</button>').join('') + '</div></div>';
+  it.choices.forEach((g, gi) => {
+    h += '<div class="og"><h5>' + esc(g.group) + '</h5><div class="opts" data-g="' + gi + '">' +
+      g.options.map(o => '<button class="opt" data-o="' + esc(o) + '">' + esc(o) + '</button>').join('') + '</div></div>';
+  });
+  if (it.addons.length) h += '<div class="og"><h5>Add-ons</h5><div class="opts" data-g="__a">' +
+    it.addons.map(a => '<button class="opt" data-o="' + esc(a.name) + '">+ ' + esc(a.name) + ' (' + a.price.toFixed(2) + ')</button>').join('') + '</div></div>';
+  h += '<div class="og"><h5>Note for kitchen</h5><input class="inp" id="iNote" maxlength="100" placeholder="e.g. less sugar, no chilli"></div>' +
+    '<div class="mbtns" style="align-items:center"><div class="qty"><button data-q="-1">−</button><span id="iQty">1</span><button data-q="1">+</button></div>' +
+    '<button class="b pri" id="iAdd"></button></div>';
+  modal(h, (box, close) => {
+    const paint = () => {
+      $$('.opts', box).forEach(grp => {
+        const g = grp.dataset.g;
+        $$('.opt', grp).forEach(b => {
+          const o = b.dataset.o;
+          const on = g === '__v' ? st.variant === o : g === '__a' ? st.addons.includes(o) : st.choices[it.choices[g].group] === o;
+          b.classList.toggle('on', on);
+        });
+      });
+      $('#iQty', box).textContent = st.qty;
+      $('#iAdd', box).textContent = 'Add · ' + rm(unit() * st.qty);
+    };
+    box.addEventListener('click', e => {
+      const ob = e.target.closest('.opt');
+      if (ob) {
+        const g = ob.parentNode.dataset.g, o = ob.dataset.o;
+        if (g === '__v') st.variant = o;
+        else if (g === '__a') st.addons = st.addons.includes(o) ? st.addons.filter(x => x !== o) : st.addons.concat(o);
+        else st.choices[it.choices[g].group] = o;
+        paint(); return;
+      }
+      const qb = e.target.closest('[data-q]');
+      if (qb) { st.qty = Math.max(1, Math.min(20, st.qty + Number(qb.dataset.q))); paint(); return; }
+      if (e.target.id === 'iAdd') { st.note = $('#iNote', box).value.trim(); onAdd(it, st, unit()); close(); }
+    });
+    paint();
+  });
+}
+
+/* ================= login ================= */
+function renderDots() {
+  const n = Math.max(4, S.pin.length);
+  $('#dots').innerHTML = Array.from({ length: n }, (_, i) => '<i class="' + (i < S.pin.length ? 'on' : '') + '"></i>').join('');
+}
+function padKey(k) {
+  if (k === 'del') S.pin = S.pin.slice(0, -1);
+  else if (k === 'go') return doLogin();
+  else if (S.pin.length < 6) S.pin += k;
+  $('#lerr').textContent = '';
+  renderDots();
+}
+async function doLogin() {
+  if (S.pin.length < 4) return loginErr('Enter your 4–6 digit PIN');
+  unlockAudio();
+  $('#lerr').textContent = 'Checking…';
+  const pin = S.pin;
+  S.pin = ''; renderDots();
+  try {
+    const r = await api('login', pin);
+    S.token = r.token; S.role = r.role;
+    ss('fu_pos', { token: r.token, role: r.role });
+    $('#lerr').textContent = '';
+    startApp();
+  } catch (e) { loginErr(errMsg(e)); }
+}
+function loginErr(m) {
+  $('#lerr').textContent = m;
+  const b = $('.lbox'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+}
+function startApp() {
+  $('#login').hidden = true; $('#app').hidden = false;
+  $('#role').textContent = S.role === 'admin' ? 'Admin' : 'Staff';
+  $$('.admin-only').forEach(el => el.hidden = S.role !== 'admin');
+  S.version = ''; S.first = true; S.seen = new Set();
+  switchTab('orders');
+  unlockAudio();
+  poll();
+  loadMenu();
+}
+function logout(expired) {
+  ss('fu_pos', null);
+  S.token = null; clearTimeout(S.pollT);
+  $('#app').hidden = true; $('#login').hidden = false;
+  $('#lerr').textContent = expired ? 'Session expired. Please log in again.' : '';
+}
+
+/* ================= tabs ================= */
+function switchTab(t) {
+  if (t === 'settings' && S.role !== 'admin') return;
+  S.tab = t;
+  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  $$('.tab').forEach(s => s.hidden = s.id !== 'tab-' + t);
+  if (t === 'counter') { renderCounter(); loadMenu(); }
+  if (t === 'menu') { renderMenuList(); loadMenu(); }
+  if (t === 'reports') loadReport();
+  if (t === 'settings') loadSettings();
+  window.scrollTo(0, 0);
+}
+
+/* ================= polling + store ================= */
+async function poll() {
+  clearTimeout(S.pollT);
+  if (!S.token) return;
+  try { applyDash(await api('getDashboard', S.token, S.version)); setConn(true); }
+  catch (e) { setConn(false); }
+  if (S.token) S.pollT = setTimeout(poll, 5000);
+}
+function setConn(ok) { $('#conn').classList.toggle('off', !ok); $('#conn').title = ok ? 'Connected' : 'Connection problem – retrying'; }
+function applyDash(r) {
+  if (!r) return;
+  if (r.store) { S.store = r.store; renderStore(); }
+  if (!r.changed) return;
+  S.version = r.version;
+  const fresh = r.active.filter(o => o.status === 'Pending' && !S.seen.has(o.id));
+  r.active.concat(r.done).forEach(o => S.seen.add(o.id));
+  S.active = r.active; S.done = r.done;
+  if (!S.first && fresh.length) {
+    chime(3);
+    toast('🔔 New order: ' + fresh.map(o => o.no).join(', '), 'ok');
+  }
+  S.first = false;
+  renderOrders();
+}
+function renderStore() {
+  const st = S.store; if (!st) return;
+  let cls, title, sub;
+  if (st.accepting) {
+    cls = st.closingSoon ? 'soon' : 'open';
+    title = st.closingSoon ? 'Closing soon · ' + st.minutesLeft + ' min left' : 'Accepting online orders';
+    sub = 'Last online order ' + st.lastOrderLabel + ' · Close ' + st.closeLabel;
+  } else {
+    cls = 'closed';
+    title = st.manualOpen ? 'Online ordering auto-closed' : 'Online ordering OFF';
+    sub = st.manualOpen ? st.reason : 'Switch ON to accept QR orders';
+  }
+  $('#store').className = 'store ' + cls;
+  $('#stitle').textContent = title; $('#ssub').textContent = sub;
+  $('#storeToggle').checked = st.manualOpen;
+  $('#hName').textContent = st.cafeName; $('#lName').textContent = st.cafeName;
+}
+async function toggleStore(e) {
+  const want = e.target.checked;
+  if (!want) {
+    const ok = await choiceBox('Stop online orders?', 'Customers will not be able to place new QR orders until you switch it back ON.', [['y', 'Yes, stop online orders', 'danger']]);
+    if (!ok) { e.target.checked = true; return; }
+  }
+  try { S.store = await api('setStoreOpen', S.token, want); renderStore(); toast(want ? 'Online ordering is ON' : 'Online ordering is OFF', want ? 'ok' : ''); }
+  catch (err) { e.target.checked = !want; toast(errMsg(err), 'err'); }
+}
+
+/* ================= orders board ================= */
+function btn(act, val, label, cls) { return '<button class="b ' + cls + '" data-act="' + act + '" data-val="' + val + '">' + label + '</button>'; }
+function cardHtml(o) {
+  const items = o.items.map(l => {
+    const ot = optsText(l);
+    return '<li><b>' + l.qty + '×</b>' + esc(l.name) + (ot ? '<small>' + esc(ot) + '</small>' : '') + (l.note ? '<em>📝 ' + esc(l.note) + '</em>' : '') + '</li>';
+  }).join('');
+  const paid = o.payStatus === 'Paid';
+  const late = o.status !== 'Ready' && (Date.now() - new Date(o.ts)) / 60000 > 15;
+  let a = '';
+  if (o.status === 'Pending') a = btn('status', 'Preparing', '✓ Accept &amp; Prepare', 'pri') + btn('cancel', '', 'Cancel', 'ghost');
+  if (o.status === 'Preparing') a = btn('status', 'Ready', '🔔 Ready for Pickup', 'pri') + btn('status', 'Pending', '↩', 'ghost sm');
+  if (o.status === 'Ready') a = btn('collect', '', '✓ Collected', 'pri') + btn('status', 'Preparing', '↩', 'ghost sm');
+  if (!paid) a += btn('pay', '', '💰 Mark paid', 'warn');
+  return '<div class="oc st-' + o.status + (late ? ' late' : '') + '" data-id="' + esc(o.id) + '">' +
+    '<div class="oh"><span class="ono">' + esc(o.no) + '</span>' +
+    '<span class="tag ' + (o.source === 'QR' ? 'qr' : 'ctr') + '">' + (o.source === 'QR' ? 'QR' : 'Counter') + '</span>' +
+    '<span class="tag ' + (o.type === 'Takeaway' ? 'ta' : 'di') + '">' + esc(o.type) + '</span>' +
+    '<span class="ago" title="' + t12(o.ts) + '">' + (o.status === 'Ready' ? 'ready ' + ago(o.readyAt || o.ts) : ago(o.ts)) + '</span></div>' +
+    '<div class="oname">' + esc(o.name) + (o.phone ? ' <small>· ' + esc(o.phone) + '</small>' : '') + '</div>' +
+    '<ul class="oi">' + items + '</ul>' +
+    (o.notes ? '<div class="onote">📝 ' + esc(o.notes) + '</div>' : '') +
+    '<div class="of"><span class="tot">' + rm(o.total) + '</span><span class="pay ' + (paid ? 'paid' : 'unpaid') + '">' + (paid ? 'PAID · ' + esc(o.payMethod) : 'UNPAID') + '</span></div>' +
+    '<div class="oa">' + a + '</div></div>';
+}
+function renderOrders() {
+  const cols = { Pending: [], Preparing: [], Ready: [] };
+  S.active.forEach(o => { if (cols[o.status]) cols[o.status].push(o); });
+  Object.keys(cols).forEach(k => {
+    const list = cols[k].sort((a, b) => a.ts < b.ts ? -1 : 1);
+    $('#col-' + k + ' .cnt').textContent = list.length;
+    $('#col-' + k + ' .list').innerHTML = list.length ? list.map(cardHtml).join('') : '<div class="empty">No orders</div>';
+  });
+  const p = cols.Pending.length;
+  $('#bPending').textContent = p; $('#bPending').hidden = !p;
+  $('#doneCnt').textContent = S.done.length;
+  $('#doneList').innerHTML = S.done.length ? S.done.map(o =>
+    '<div class="drow" data-id="' + esc(o.id) + '"><b>' + esc(o.no) + '</b><span>' + esc(o.name) + ' <span class="hint hide-sm">· ' + o.items.reduce((a, l) => a + l.qty, 0) + ' items</span></span>' +
+    '<span>' + rm(o.total) + '</span><span class="hide-sm"><span class="pay ' + (o.payStatus === 'Paid' ? 'paid' : 'unpaid') + '">' + (o.payStatus === 'Paid' ? 'PAID · ' + esc(o.payMethod) : 'UNPAID') + '</span></span>' +
+    '<span class="st ' + o.status + '">' + o.status + '</span><span>' +
+    (o.payStatus !== 'Paid' && o.status !== 'Cancelled' ? '<button class="lnk" data-act="pay">Mark paid</button>' : '') +
+    (o.status === 'Completed' ? '<button class="lnk" data-act="status" data-val="Ready">Undo</button>' : '') +
+    (o.status === 'Cancelled' ? '<button class="lnk" data-act="status" data-val="Pending">Restore</button>' : '') +
+    '</span></div>').join('') : '<div class="empty">Nothing yet today</div>';
+}
+async function orderAction(act, id, val, b) {
+  const o = S.active.concat(S.done).find(x => x.id === id);
+  if (!o) return;
+  const busy = () => { if (b) { b.disabled = true; b.dataset.l = b.innerHTML; b.innerHTML = '…'; } };
+  const unbusy = () => { if (b && b.isConnected) { b.disabled = false; b.innerHTML = b.dataset.l; } };
+  try {
+    if (act === 'status') {
+      busy();
+      applyDash(await api('updateOrderStatus', S.token, id, val, ''));
+      if (val === 'Ready') toast('🔔 ' + o.no + ' marked ready — customer notified', 'ok');
+    } else if (act === 'cancel') {
+      const reason = await promptBox('Cancel order ' + o.no + '?', 'Reason (optional, e.g. item sold out)', 'Cancel order', 'danger');
+      if (reason === null) return;
+      busy();
+      applyDash(await api('updateOrderStatus', S.token, id, 'Cancelled', reason));
+      toast('Order ' + o.no + ' cancelled');
+    } else if (act === 'pay') {
+      const m = await choiceBox('Mark ' + o.no + ' as paid', rm(o.total) + ' — how did the customer pay?', [['QR', '📱 QR / DuitNow'], ['Cash', '💵 Cash', 'ghost']]);
+      if (!m) return;
+      busy();
+      applyDash(await api('markPaid', S.token, id, m));
+      toast(o.no + ' marked as paid', 'ok');
+    } else if (act === 'collect') {
+      if (o.payStatus !== 'Paid') {
+        const m = await choiceBox(o.no + ' is NOT paid yet', 'Collect ' + rm(o.total) + ' before handing over the order.', [['QR', '📱 Paid by QR'], ['Cash', '💵 Paid by Cash', 'ghost'], ['skip', 'Complete without payment', 'warn']]);
+        if (!m) return;
+        busy();
+        if (m !== 'skip') applyDash(await api('markPaid', S.token, id, m));
+      } else busy();
+      applyDash(await api('updateOrderStatus', S.token, id, 'Completed', ''));
+    }
+  } catch (e) { toast(errMsg(e), 'err'); unbusy(); poll(); }
+}
+
+/* ================= menu ================= */
+async function loadMenu() {
+  try {
+    S.menu = await api('getMenuAdmin', S.token);
+    const off = S.menu.items.filter(i => !i.available).length;
+    $('#bOff').textContent = off; $('#bOff').hidden = !off;
+    if (S.tab === 'counter') renderCounter();
+    if (S.tab === 'menu') renderMenuList();
+  } catch (e) { if (S.token) toast('Menu: ' + errMsg(e), 'err'); }
+}
+function renderMenuList() {
+  if (!S.menu) { $('#mList').innerHTML = '<div class="empty">Loading menu…</div>'; return; }
+  const q = S.mSearch.toLowerCase();
+  const html = S.menu.cats.map(cat => {
+    const items = S.menu.items.filter(i => i.cat === cat &&
+      (!q || i.name.toLowerCase().includes(q)) &&
+      (S.mFilter === 'all' || (S.mFilter === 'on' ? i.available : !i.available)));
+    if (!items.length) return '';
+    return '<div class="mcat"><h4>' + emoji(cat) + ' ' + esc(cat) + '</h4>' + items.map(i =>
+      '<div class="mrow ' + (i.available ? '' : 'off') + '"><div class="mn"><b>' + esc(i.name) + '</b><small>' + esc(priceLabel(i)) + '</small></div>' +
+      '<span class="mstate">' + (i.available ? 'Available' : 'Sold out') + '</span>' +
+      '<label class="switch"><input type="checkbox" data-id="' + esc(i.id) + '"' + (i.available ? ' checked' : '') + '><span></span></label></div>').join('') + '</div>';
+  }).join('');
+  $('#mList').innerHTML = html || '<div class="empty">No items found</div>';
+}
+async function toggleItem(input) {
+  const id = input.dataset.id, on = input.checked;
+  const it = S.menu.items.find(i => i.id === id);
+  if (it) it.available = on;
+  renderMenuList();
+  try {
+    S.menu = await api('setItemAvailability', S.token, id, on);
+    const off = S.menu.items.filter(i => !i.available).length;
+    $('#bOff').textContent = off; $('#bOff').hidden = !off;
+    renderMenuList();
+    toast((it ? it.name : 'Item') + (on ? ' is ON' : ' is OFF (sold out)'), on ? 'ok' : '');
+  } catch (e) { if (it) it.available = !on; renderMenuList(); toast(errMsg(e), 'err'); }
+}
+
+/* ================= counter (walk-in) ================= */
+function renderCounter() {
+  if (!S.menu) { $('#cGrid').innerHTML = '<div class="empty">Loading menu…</div>'; renderCart(); return; }
+  $('#cCats').innerHTML = ['All'].concat(S.menu.cats).map(c => '<button class="chip' + (S.cCat === c ? ' on' : '') + '" data-c="' + esc(c) + '">' + (c === 'All' ? 'All' : emoji(c) + ' ' + esc(c)) + '</button>').join('');
+  const q = S.cSearch.toLowerCase();
+  const items = S.menu.items.filter(i => (S.cCat === 'All' || i.cat === S.cCat) && (!q || i.name.toLowerCase().includes(q)));
+  $('#cGrid').innerHTML = items.map(i =>
+    '<button class="tile' + (i.available ? '' : ' off') + '" data-id="' + esc(i.id) + '"><span class="em">' + emoji(i.cat) + '</span>' +
+    '<span class="tn">' + esc(i.name) + '</span><span class="tp">' + esc(priceLabel(i)) + '</span>' +
+    (i.available ? '' : '<span class="so">SOLD OUT</span>') + '</button>').join('') || '<div class="empty">No items</div>';
+  renderCart();
+}
+function addToCart(it, st, unit) {
+  const key = JSON.stringify([it.id, st.variant, st.choices, st.addons.slice().sort(), st.note]);
+  const ex = S.cart.find(l => l.key === key);
+  if (ex) ex.qty = Math.min(20, ex.qty + st.qty);
+  else S.cart.push({ key, id: it.id, name: it.name, variant: st.variant, choices: Object.assign({}, st.choices), addons: st.addons.slice(), qty: st.qty, note: st.note, unit });
+  renderCart();
+}
+function cartTotals() {
+  const sub = r2(S.cart.reduce((a, l) => a + l.unit * l.qty, 0));
+  const fee = S.orderType === 'Takeaway' && S.cart.length ? r2((S.store && S.store.packagingFee) || 0) : 0;
+  return { sub, fee, total: r2(sub + fee) };
+}
+function renderCart() {
+  $('#cLines').innerHTML = S.cart.length ? S.cart.map((l, i) => {
+    const ot = optsText(l);
+    return '<div class="cl"><div class="nm">' + esc(l.name) + (ot ? '<small>' + esc(ot) + '</small>' : '') + (l.note ? '<small>📝 ' + esc(l.note) + '</small>' : '') + '</div>' +
+      '<div class="qty"><button data-i="' + i + '" data-d="-1">−</button><span>' + l.qty + '</span><button data-i="' + i + '" data-d="1">+</button></div>' +
+      '<div class="pr">' + (l.unit * l.qty).toFixed(2) + '</div></div>';
+  }).join('') : '<div class="cempty">Tap menu items to add them here</div>';
+  const t = cartTotals();
+  $('#cSum').innerHTML = '<div><span>Subtotal</span><span>' + rm(t.sub) + '</span></div>' +
+    (t.fee ? '<div><span>Packaging fee</span><span>' + rm(t.fee) + '</span></div>' : '') +
+    '<div class="gt"><span>Total</span><span>' + rm(t.total) + '</span></div>';
+  $$('#cType button').forEach(b => b.classList.toggle('on', b.dataset.v === S.orderType));
+  $$('#cPay button').forEach(b => b.classList.toggle('on', b.dataset.v === S.payMethod));
+  $('#cashBox').hidden = S.payMethod !== 'Cash';
+  const quick = [t.total];
+  [5, 10, 20, 50, 100].forEach(n => { const v = Math.ceil(t.total / n) * n; if (v > t.total && !quick.includes(v) && quick.length < 5) quick.push(v); });
+  $('#cQuick').innerHTML = t.total ? quick.map((v, i) => '<button data-cash="' + v + '">' + (i === 0 ? 'Exact' : 'RM ' + v) + '</button>').join('') : '';
+  updateChange();
+  $('#cSubmit').textContent = S.cart.length ? 'Place Order · ' + rm(t.total) : 'Place Order';
+}
+function updateChange() {
+  const t = cartTotals().total, cash = parseFloat($('#cCash').value);
+  const ch = cash >= 0 ? cash - t : 0;
+  $('#cChange').textContent = isNaN(cash) ? 'RM 0.00' : (ch < 0 ? 'Short ' + rm(-ch) : rm(ch));
+  $('#cChange').style.color = ch < 0 ? 'var(--red)' : '';
+}
+async function submitCounter() {
+  if (!S.cart.length) return toast('Cart is empty', 'err');
+  const t = cartTotals();
+  let cash = null;
+  if (S.payMethod === 'Cash') {
+    cash = parseFloat($('#cCash').value);
+    if (isNaN(cash)) cash = t.total;
+    if (cash < t.total) return toast('Cash received is less than the total', 'err');
+  }
+  const b = $('#cSubmit'); b.disabled = true; b.textContent = 'Placing order…';
+  try {
+    const r = await api('createCounterOrder', S.token, {
+      items: S.cart.map(l => ({ id: l.id, variant: l.variant, choices: l.choices, addons: l.addons, qty: l.qty, note: l.note })),
+      orderType: S.orderType, name: $('#cName').value, notes: $('#cNotes').value, payMethod: S.payMethod
+    });
+    applyDash(r.dash);
+    S.cart = []; $('#cName').value = ''; $('#cNotes').value = ''; $('#cCash').value = '';
+    renderCart();
+    modal('<p class="md" style="text-align:center;margin:0">Order created ✅</p><div class="big-no">' + esc(r.order.no) + '</div>' +
+      '<p style="text-align:center;margin:0 0 4px">Total <b>' + rm(r.order.total) + '</b> · ' + (r.order.payStatus === 'Paid' ? 'Paid by ' + esc(r.order.payMethod) : 'Unpaid') + '</p>' +
+      (cash != null ? '<p style="text-align:center;font-size:20px;margin:8px 0">Change: <b style="color:var(--g)">' + rm(cash - r.order.total) + '</b></p>' : '') +
+      '<div class="mbtns"><button class="b pri big" data-close>OK</button></div>',
+      (box, close) => box.querySelector('[data-close]').onclick = close);
+  } catch (e) {
+    toast(errMsg(e), 'err');
+    if (/sold out|no longer/i.test(errMsg(e))) loadMenu();
+  }
+  b.disabled = false; renderCart();
+}
+
+/* ================= reports ================= */
+function todayKL() {
+  const d = new Date(), o = d.getTimezoneOffset();
+  return new Date(d.getTime() - o * 60000).toISOString().slice(0, 10);
+}
+async function loadReport() {
+  if (!$('#rDate').value) $('#rDate').value = todayKL();
+  $('#rBody').innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const r = await api('getReport', S.token, $('#rDate').value);
+    const avg = r.orders ? r.sales / r.orders : 0;
+    const maxH = Math.max(1, ...r.hourly.map(h => h.sales));
+    const hl = h => ((h % 12) || 12) + (h < 12 ? 'am' : 'pm');
+    $('#rBody').innerHTML =
+      '<div class="kpis">' +
+      '<div class="kpi"><span>Total sales</span><b>' + rm(r.sales) + '</b><small>' + r.orders + ' orders</small></div>' +
+      '<div class="kpi"><span>Average per order</span><b>' + rm(avg) + '</b><small>Packaging ' + rm(r.packaging) + '</small></div>' +
+      '<div class="kpi"><span>Collected (paid)</span><b>' + rm(r.paid) + '</b><small>QR ' + rm(r.byPay.QR) + ' · Cash ' + rm(r.byPay.Cash) + '</small></div>' +
+      '<div class="kpi"><span>Unpaid</span><b style="color:' + (r.unpaid ? 'var(--red)' : 'inherit') + '">' + rm(r.unpaid) + '</b><small>' + r.unpaidCount + ' orders · ' + r.cancelled + ' cancelled</small></div>' +
+      '</div><div class="cards2">' +
+      '<div class="card"><h3>Orders by channel</h3><table class="tbl"><tr><th></th><th class="r">Orders</th><th class="r">Sales</th></tr>' +
+      '<tr><td>📱 QR online</td><td class="r">' + r.bySource.QR.count + '</td><td class="r">' + rm(r.bySource.QR.sales) + '</td></tr>' +
+      '<tr><td>🧾 Counter</td><td class="r">' + r.bySource.Counter.count + '</td><td class="r">' + rm(r.bySource.Counter.sales) + '</td></tr>' +
+      '<tr><td>🍽️ Dine-in</td><td class="r">' + r.byType['Dine-in'] + '</td><td></td></tr>' +
+      '<tr><td>🛍️ Takeaway</td><td class="r">' + r.byType.Takeaway + '</td><td></td></tr></table></div>' +
+      '<div class="card"><h3>Sales by hour</h3>' + (r.hourly.length ? '<div class="bars">' + r.hourly.map(h =>
+        '<div class="bar"><em>' + Math.round(h.sales) + '</em><i style="height:' + Math.max(3, h.sales / maxH * 100) + '%"></i><span>' + hl(h.h) + '</span></div>').join('') + '</div>' : '<div class="empty">No sales</div>') + '</div>' +
+      '<div class="card" style="grid-column:1/-1"><h3>Top items</h3>' + (r.top.length ? '<table class="tbl"><tr><th>Item</th><th class="r">Qty</th><th class="r">Sales</th></tr>' +
+        r.top.map(t => '<tr><td>' + esc(t.name) + '</td><td class="r">' + t.qty + '</td><td class="r">' + rm(t.sales) + '</td></tr>').join('') + '</table>' : '<div class="empty">No items sold</div>') + '</div></div>';
+  } catch (e) { $('#rBody').innerHTML = '<div class="empty">' + esc(errMsg(e)) + '</div>'; }
+}
+
+/* ================= settings ================= */
+async function loadSettings() {
+  try {
+    const r = await api('getSettingsAdmin', S.token);
+    const s = r.settings;
+    ['CafeName', 'OpenTime', 'CloseTime', 'LastOrderMinutes', 'PackagingFee', 'PaymentNote', 'Announcement', 'StaffPIN', 'AdminPIN']
+      .forEach(k => { $('#s' + k).value = s[k] || ''; });
+    S.days = String(s.OpenDays || '').split(',').map(d => d.trim().slice(0, 3)).filter(Boolean);
+    renderDays();
+    const url = new URL('./', location.href).href;
+    $('#qrUrl').textContent = url; $('#openUrl').href = url;
+    $('#qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=12&data=' + encodeURIComponent(url);
+  } catch (e) { toast(errMsg(e), 'err'); }
+}
+function renderDays() {
+  $('#sDays').innerHTML = DAYS.map(d => '<button data-d="' + d + '" class="' + (S.days.some(x => x.toLowerCase() === d.toLowerCase()) ? 'on' : '') + '">' + d + '</button>').join('');
+}
+async function saveSettingsUI() {
+  const o = {};
+  ['CafeName', 'OpenTime', 'CloseTime', 'LastOrderMinutes', 'PackagingFee', 'PaymentNote', 'Announcement', 'StaffPIN', 'AdminPIN']
+    .forEach(k => o[k] = $('#s' + k).value.trim());
+  o.OpenDays = DAYS.filter(d => S.days.some(x => x.toLowerCase() === d.toLowerCase())).join(',');
+  const b = $('#sSave'); b.disabled = true; b.textContent = 'Saving…';
+  try {
+    const r = await api('saveSettings', S.token, o);
+    S.store = r.store; renderStore();
+    toast('Settings saved ✅', 'ok');
+  } catch (e) { toast(errMsg(e), 'err'); }
+  b.disabled = false; b.textContent = 'Save settings';
+}
+
+/* ================= events ================= */
+$('#pad').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) padKey(b.dataset.k); });
+document.addEventListener('keydown', e => {
+  if ($('#login').hidden) return;
+  if (/^\d$/.test(e.key)) padKey(e.key);
+  else if (e.key === 'Backspace') padKey('del');
+  else if (e.key === 'Enter') padKey('go');
+});
+$('#logoutBtn').onclick = () => logout(false);
+$('#soundBtn').onclick = () => { unlockAudio(); setTimeout(() => chime(1), 250); };
+$('#storeToggle').addEventListener('change', toggleStore);
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) switchTab(b.dataset.tab); });
+$('#tab-orders').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  orderAction(b.dataset.act, b.closest('[data-id]').dataset.id, b.dataset.val, b);
+});
+$('#cSearch').addEventListener('input', e => { S.cSearch = e.target.value; renderCounter(); });
+$('#cCats').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b) { S.cCat = b.dataset.c; renderCounter(); } });
+$('#cGrid').addEventListener('click', e => {
+  const b = e.target.closest('.tile'); if (!b) return;
+  const it = S.menu.items.find(i => i.id === b.dataset.id); if (!it) return;
+  if (!it.available) return toast(it.name + ' is sold out — switch it ON in "Menu ON/OFF"', 'err');
+  if (it.variants.length > 1 || it.choices.length || it.addons.length) itemModal(it, addToCart);
+  else addToCart(it, { variant: it.variants[0] ? it.variants[0].name : '', choices: {}, addons: [], qty: 1, note: '' }, it.variants[0] ? it.variants[0].price : it.price);
+});
+$('#cLines').addEventListener('click', e => {
+  const b = e.target.closest('[data-d]'); if (!b) return;
+  const l = S.cart[Number(b.dataset.i)]; if (!l) return;
+  l.qty += Number(b.dataset.d);
+  if (l.qty <= 0) S.cart.splice(Number(b.dataset.i), 1);
+  renderCart();
+});
+$('#cType').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) { S.orderType = b.dataset.v; renderCart(); } });
+$('#cPay').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { S.payMethod = b.dataset.v; renderCart(); } });
+$('#cCash').addEventListener('input', updateChange);
+$('#cQuick').addEventListener('click', e => { const b = e.target.closest('[data-cash]'); if (b) { $('#cCash').value = b.dataset.cash; updateChange(); } });
+$('#cSubmit').onclick = submitCounter;
+$('#cClear').onclick = () => { S.cart = []; renderCart(); };
+$('#mSearch').addEventListener('input', e => { S.mSearch = e.target.value; renderMenuList(); });
+$('#mFilter').addEventListener('click', e => {
+  const b = e.target.closest('[data-v]'); if (!b) return;
+  S.mFilter = b.dataset.v; $$('#mFilter button').forEach(x => x.classList.toggle('on', x === b)); renderMenuList();
+});
+$('#mList').addEventListener('change', e => { if (e.target.matches('input[data-id]')) toggleItem(e.target); });
+$('#rGo').onclick = loadReport;
+$('#rDate').addEventListener('change', loadReport);
+$('#sDays').addEventListener('click', e => {
+  const b = e.target.closest('[data-d]'); if (!b) return;
+  const d = b.dataset.d;
+  S.days = S.days.some(x => x.toLowerCase() === d.toLowerCase()) ? S.days.filter(x => x.toLowerCase() !== d.toLowerCase()) : S.days.concat(d);
+  renderDays();
+});
+$('#sSave').onclick = saveSettingsUI;
+$('#copyUrl').onclick = () => {
+  const u = $('#qrUrl').textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => toast('Link copied', 'ok'))
+    .catch(() => { prompt('Copy this link:', u); });
+};
+
+// clock + refresh "minutes ago" + remind about un-accepted orders
+setInterval(() => { $('#clock').textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }, 1000);
+setInterval(() => { if (S.token && S.tab === 'orders') renderOrders(); }, 30000);
+setInterval(() => { if (S.token && S.active.some(o => o.status === 'Pending')) chime(1); }, 25000);
+
+/* ================= boot ================= */
+$('#lName').textContent = BOOT.cafeName || 'FutureU Cafe';
+renderDots();
+const saved = ss('fu_pos');
+if (saved && saved.token) { S.token = saved.token; S.role = saved.role; startApp(); }
+</script>
+</body>
+</html>
