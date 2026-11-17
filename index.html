@@ -214,6 +214,31 @@ function chime(n) {
 }
 document.addEventListener('pointerdown', unlockAudio);
 
+/* ================= keep screen on (Wake Lock) ================= */
+let wakeLock = null, wantWake = false;
+async function keepAwake(on) {
+  wantWake = on;
+  try {
+    if (on && !wakeLock && 'wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; paintWake(); });
+    } else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) { wakeLock = null; }
+  paintWake();
+}
+function paintWake() {
+  const el = $('#wakeInfo'); if (!el) return;
+  el.textContent = wakeLock ? '🔆 Screen will stay on while you wait. Please keep this page open.'
+    : '🔔 Keep this page open — your phone will ring when your order is ready.';
+}
+document.addEventListener('visibilitychange', () => {
+  // the lock is dropped when the page is hidden; take it again when the customer comes back
+  if (document.visibilityState === 'visible') {
+    if (wantWake) keepAwake(true);
+    if (O.track) pollTrack();
+  }
+});
+
 /* ================= saved orders ================= */
 function savedOrders() { return (ls('fu_orders') || []).filter(o => o.date === today()); }
 function saveOrder(token, order) {
@@ -453,10 +478,12 @@ function openTrack(token, first) {
   $('#menuView').hidden = true; $('#trackView').hidden = false; renderCartBar();
   window.scrollTo(0, 0);
   if (first) renderTrack(first); else $('#trackView').innerHTML = '<div class="tcard"><div class="tlbl">Loading your order…</div></div>';
+  keepAwake(true);
   pollTrack();
 }
 function closeTrack() {
   clearTimeout(O.pollT); clearTimeout(O.ringT); O.track = null;
+  keepAwake(false);
   $('#trackView').hidden = true; $('#menuView').hidden = false;
   renderStore(); renderCartBar();
 }
@@ -474,7 +501,7 @@ async function pollTrack() {
     }
     renderTrack(r);
     saveOrder(tok, r.order);
-    if (['Completed', 'Cancelled'].includes(r.order.status)) return;
+    if (['Completed', 'Cancelled'].includes(r.order.status)) { keepAwake(false); return; }
   } catch (e) { /* network hiccup: keep trying */ }
   O.pollT = setTimeout(pollTrack, 6000);
 }
@@ -517,9 +544,10 @@ function renderTrack(r) {
     '<div class="sum">' + (o.fee ? '<div><span>Packaging fee</span><span>' + rm(o.fee) + '</span></div>' : '') +
     '<div class="gt"><span>Total</span><span>' + rm(o.total) + '</span></div></div>' +
     (!paid && st !== 'Cancelled' && O.store && O.store.paymentNote ? '<div class="paynote">💳 ' + esc(O.store.paymentNote) + '</div>' : '') + '</div>' +
-    (['Completed', 'Cancelled'].includes(st) ? '' : '<p class="keep">🔔 Keep this page open — your phone will ring when your order is ready.</p>') +
+    (['Completed', 'Cancelled'].includes(st) ? '' : '<p class="keep" id="wakeInfo"></p>') +
     myOrdersHtml() +
     '<button class="cta full" id="tMore" style="margin-top:14px">' + (st === 'Completed' ? 'Order again' : 'Order more items') + '</button>';
+  paintWake();
 }
 function myOrdersHtml() {
   const list = savedOrders().filter(x => x.token !== O.track);
