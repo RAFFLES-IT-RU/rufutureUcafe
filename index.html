@@ -216,6 +216,31 @@ function chime(n) {
 }
 document.addEventListener('pointerdown', unlockAudio);
 
+/* ================= auto update (new code on GitHub) ================= */
+// Compares the copy of this page the phone has cached with the copy on GitHub.
+// If they differ, the page reloads by itself (never while the customer is mid-order).
+const pageUrl = location.href.split('#')[0].split('?')[0];
+const sig = t => { let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return h; };
+let pendingReload = false;
+async function checkUpdate() {
+  try {
+    const cached = await (await fetch(pageUrl, { cache: 'force-cache' })).text();
+    const fresh = await (await fetch(pageUrl, { cache: 'reload' })).text();
+    if (sig(cached) === sig(fresh) && !pendingReload) return;
+    pendingReload = true;
+    tryReload();
+  } catch (e) {}
+}
+function busy() { return !!O.track || !!document.querySelector('.ov'); }
+async function tryReload() {
+  if (!pendingReload || busy()) return;
+  let last = 0; try { last = Number(sessionStorage.getItem('fu_reload') || 0); } catch (e) {}
+  if (Date.now() - last < 120000) return;           // safety: max once per 2 minutes
+  try { sessionStorage.setItem('fu_reload', String(Date.now())); } catch (e) {}
+  try { await fetch('config.js', { cache: 'reload' }); } catch (e) {}
+  location.reload();
+}
+
 /* ================= keep screen on (Wake Lock) ================= */
 let wakeLock = null, wantWake = false;
 async function keepAwake(on) {
@@ -237,7 +262,8 @@ document.addEventListener('visibilitychange', () => {
   // the lock is dropped when the page is hidden; take it again when the customer comes back
   if (document.visibilityState === 'visible') {
     if (wantWake) keepAwake(true);
-    if (O.track) pollTrack();
+    if (O.track) pollTrack(); else refreshMenu();
+    checkUpdate();
   }
 });
 
@@ -254,15 +280,42 @@ async function loadMenu() {
   try {
     const r = await api('getPublicMenu');
     O.store = r.store; O.cats = r.cats; O.items = r.items;
-    // drop cart lines whose item disappeared
-    O.cart = O.cart.filter(l => O.items.some(i => i.id === l.id));
+    O.menuSig = JSON.stringify([r.cats, r.items]);
+    syncCart();
     renderAll();
   } catch (e) {
     $('#menu').innerHTML = '<div class="notice closed">Could not load the menu. Please check your connection and refresh.<br><small>' + esc(errMsg(e)) + '</small></div>';
   }
 }
-async function refreshStore() {
-  try { O.store = await api('getStoreStatus'); renderStore(); } catch (e) {}
+// Pull the latest menu (prices, sold-out items, opening hours) without reloading the page
+async function refreshMenu() {
+  try {
+    const r = await api('getPublicMenu');
+    O.store = r.store;
+    const sigM = JSON.stringify([r.cats, r.items]);
+    if (sigM !== O.menuSig) {
+      O.menuSig = sigM; O.cats = r.cats; O.items = r.items;
+      syncCart();
+      if (!O.track) renderMenu();
+    }
+    if (!O.track) renderStore();
+    renderCartBar();
+  } catch (e) {}
+}
+// Update cart prices to the newest menu and remove items that are now sold out
+function syncCart() {
+  const gone = [];
+  O.cart = O.cart.filter(l => {
+    const it = O.items.find(i => i.id === l.id);
+    if (!it || !it.available) { gone.push(l.name); return false; }
+    let u = it.variants.length ? ((it.variants.find(v => v.name === l.variant) || {}).price) : it.price;
+    if (u == null) { gone.push(l.name); return false; }
+    (l.addons || []).forEach(n => { const a = it.addons.find(x => x.name === n); if (a) u += a.price; });
+    l.unit = r2(u);
+    return true;
+  });
+  saveCart();
+  if (gone.length) toast('Sorry, ' + gone.join(', ') + ' is now sold out and was removed from your cart.', 'err');
 }
 function renderAll() { renderStore(); renderMenu(); renderCartBar(); }
 function renderStore() {
@@ -585,7 +638,10 @@ document.addEventListener('click', e => {
   if (c && c.date === today() && Array.isArray(c.cart)) O.cart = c.cart;
   $('#cafeName').textContent = BOOT.cafeName || 'FutureU Cafe';
   loadMenu();
-  O.storeT = setInterval(() => { if (!O.track) refreshStore(); }, 60000);
+  O.storeT = setInterval(() => { if (!O.track && document.visibilityState === 'visible') refreshMenu(); }, 45000);
+  setTimeout(checkUpdate, 4000);
+  setInterval(checkUpdate, 5 * 60000);
+  setInterval(tryReload, 5000);   // apply a waiting update once the customer closes popups / tracking
   if (BOOT.track) openTrack(BOOT.track);
 })();
 </script>

@@ -987,6 +987,37 @@ $('#copyUrl').onclick = () => {
     .catch(() => { prompt('Copy this link:', u); });
 };
 
+/* ================= auto update (new code on GitHub) ================= */
+const pageUrl = location.href.split('#')[0].split('?')[0];
+const sig = t => { let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return h; };
+let pendingReload = false;
+async function checkUpdate() {
+  try {
+    const cached = await (await fetch(pageUrl, { cache: 'force-cache' })).text();
+    const fresh = await (await fetch(pageUrl, { cache: 'reload' })).text();
+    if (sig(cached) !== sig(fresh)) pendingReload = true;
+    tryReload();
+  } catch (e) {}
+}
+async function tryReload() {
+  // only reload when it is safe: no items in the counter cart and no popup open
+  if (!pendingReload || S.cart.length || document.querySelector('.ov')) return;
+  let last = 0; try { last = Number(sessionStorage.getItem('fu_reload') || 0); } catch (e) {}
+  if (Date.now() - last < 120000) return;
+  try { sessionStorage.setItem('fu_reload', String(Date.now())); } catch (e) {}
+  try { await fetch('config.js', { cache: 'reload' }); } catch (e) {}
+  location.reload();   // login is kept (sessionStorage)
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || !S.token) return;
+  poll(); loadMenu(); checkUpdate();
+});
+setTimeout(checkUpdate, 4000);
+setInterval(checkUpdate, 5 * 60000);
+setInterval(tryReload, 5000);
+// keep menu ON/OFF in sync between devices (e.g. 2 tablets)
+setInterval(() => { if (S.token && document.visibilityState === 'visible') loadMenu(); }, 60000);
+
 // clock + refresh "minutes ago" + remind about un-accepted orders
 setInterval(() => { $('#clock').textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }, 1000);
 setInterval(() => { if (S.token && S.tab === 'orders') renderOrders(); }, 30000);
